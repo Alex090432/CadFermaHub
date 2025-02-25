@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package FermaHub.Microservice;
+
+import "Microservice.proto";
+
+  message Response {
+    string result = 1; 
+    repeated HttpMethod http_methods = 2; 
+    string params = 3; 
+  }
