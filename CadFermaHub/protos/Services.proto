@@ -1,0 +1,36 @@
+syntax="proto3";
+
+package FermaHub.Microservice;
+
+import "Microservice.proto";
+import "Request.proto";
+import "Responce.proto";
+import "google/protobuf/empty.proto";
+
+service ApiService {
+    rpc SetMicroservice(Microservice) returns (SetMicroserviceResponse);
+  
+    rpc GetEndpointsInfo(google.protobuf.Empty) returns (Microservice);
+  
+    rpc EditMicroservice(Microservice) returns (EditMicroserviceResponse);
+  
+    rpc DeleteMicroservice(DeleteMicroserviceRequest) returns (DeleteMicroserviceResponse);
+
+    rpc SendRequest(Request) returns (Response);
+  }
+
+  message SetMicroserviceResponse {
+    bool success = 1; // Indicates if the operation was successful
+}
+
+message EditMicroserviceResponse {
+    bool success = 1; // Indicates if the operation was successful
+}
+
+message DeleteMicroserviceRequest {
+    string id = 1; // The ID of the microservice to delete
+}
+
+message DeleteMicroserviceResponse {
+    bool success = 1; // Indicates if the operation was successful
+}
