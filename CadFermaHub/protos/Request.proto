@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package FermaHub.Microservice;
 
-import "Microservice.proto";
+import "protos/Microservice.proto";
 
 message Request {
     string microservice_guid = 1; 
     string data = 2; 
-    repeated HttpMethod http_methods = 3; // Enum[]
-    string params = 4; // Параметры, представленные как строка
+    HttpMethod http_methods = 3; 
+    string params = 4; 
   }

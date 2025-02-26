@@ -2,9 +2,9 @@ syntax="proto3";
 
 package FermaHub.Microservice;
 
-import "Microservice.proto";
-import "Request.proto";
-import "Responce.proto";
+import "protos/Microservice.proto";
+import "protos/Request.proto";
+import "protos/Responce.proto";
 import "google/protobuf/empty.proto";
 
 service ApiService {

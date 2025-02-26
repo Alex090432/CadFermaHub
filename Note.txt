@@ -1,3 +1,6 @@
 Protobuf:
 sudo apt install -y protobuf-compiler
 protoc --version 
+
+protoc --proto_path=. --csharp_out=../Service Services.proto
+protoc --proto_path=. --csharp_out=../Models Request.proto
