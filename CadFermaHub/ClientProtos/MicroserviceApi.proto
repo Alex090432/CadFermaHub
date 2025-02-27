@@ -1,0 +1,11 @@
+﻿syntax="proto3";
+
+package CadFermaHub.MicroserviceServer;
+
+import "SharedProtos/Request.proto";
+import "SharedProtos/Responce.proto";
+
+service MicroserviceApi {
+    rpc SendRequest(Request) returns (Response);
+  }
+

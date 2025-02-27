@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+package CadFermaHub.MicroserviceServer;
+
+message Table{
+    repeated string header = 1;
+    repeated string data = 2;
+}
+
+message Data {
+    repeated string input_paths = 1;
+    repeated string output_paths = 2;
+    repeated string info = 3;
+    Table table = 4;
+    string params = 5; 
+}

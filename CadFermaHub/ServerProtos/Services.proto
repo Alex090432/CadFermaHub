@@ -1,16 +1,16 @@
 syntax="proto3";
 
-package FermaHub.Microservice;
+package CadFermaHub.MicroserviceServer;
 
-import "protos/Microservice.proto";
-import "protos/Request.proto";
-import "protos/Responce.proto";
+import "ServerProtos/Microservice.proto";
+import "SharedProtos/Request.proto";
+import "SharedProtos/Responce.proto";
 import "google/protobuf/empty.proto";
 
 service ApiService {
     rpc SetMicroservice(Microservice) returns (SetMicroserviceResponse);
   
-    rpc GetEndpointsInfo(google.protobuf.Empty) returns (Microservice);
+    rpc GetMicroservices(google.protobuf.Empty) returns (GetMicroserviceResponse);
   
     rpc EditMicroservice(Microservice) returns (EditMicroserviceResponse);
   
@@ -20,17 +20,21 @@ service ApiService {
   }
 
   message SetMicroserviceResponse {
-    bool success = 1; // Indicates if the operation was successful
+    bool success = 1; 
 }
 
 message EditMicroserviceResponse {
-    bool success = 1; // Indicates if the operation was successful
+    bool success = 1; 
+}
+
+message GetMicroserviceResponse {
+    repeated Microservice microservices = 1; 
 }
 
 message DeleteMicroserviceRequest {
-    string id = 1; // The ID of the microservice to delete
+    string id = 1; 
 }
 
 message DeleteMicroserviceResponse {
-    bool success = 1; // Indicates if the operation was successful
+    bool success = 1; 
 }

@@ -7,15 +7,15 @@ namespace CadFermaHub.Data.EFModels
     public class Microservice
     {
         [Key]
-        public Guid Id { get; set; } 
-        public string Name { get; set; } 
-        public List<HttpMethod> HttpMethods { get; set; } 
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public List<HttpMethod> HttpMethods { get; set; } = new();
         public DataType InputType { get; set; } 
         public DataType TypeResult { get; set; } 
-        public string Author { get; set; } 
-        public string Params { get; set; } 
-        public string Description { get; set; } 
-        public string Notes { get; set; } 
+        public string Author { get; set; } = string.Empty;
+        public string Params { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
     }
 
     // Enum for HTTP methods
