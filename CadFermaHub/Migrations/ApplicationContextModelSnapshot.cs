@@ -31,6 +31,10 @@ namespace CadFermaHub.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.PrimitiveCollection<string>("Endpoints")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.PrimitiveCollection<string>("HttpMethods")
                         .IsRequired()
                         .HasColumnType("TEXT");

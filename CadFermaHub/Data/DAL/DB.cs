@@ -2,7 +2,7 @@
 
 namespace CadFermaHub.Data.DAL
 {
-    interface IDB {
+    public interface IDB {
         List<Microservice> GetMicroservices();
         bool EditMicroservice(Microservice microservice);
         bool AddMicroservice(Microservice microservice);

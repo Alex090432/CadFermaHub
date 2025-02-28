@@ -12,20 +12,21 @@ namespace CadFermaHub.Service
 {
     public class ApiServiceWork : ApiService.ApiServiceBase
     {
-        [Inject] private IDB dB { get; set; }
+        [Inject] private IDB DB { get; set; }
         [Inject] private IClassConverter ClassConverter { get; set; }
+        [Inject] private EndpointsService endpointsService { get; set; }
         public async override Task<SetMicroserviceResponse> SetMicroservice(ProtoMicroservice request, ServerCallContext context)
         {
             EFMicroservice microservice = new();
             ClassConverter.Convert(request, microservice);
-            return new SetMicroserviceResponse() { Success = dB.AddMicroservice(microservice) };
+            return new SetMicroserviceResponse() { Success = DB.AddMicroservice(microservice) };
         }
 
 
         public async override Task<GetMicroserviceResponse> GetMicroservices(Google.Protobuf.WellKnownTypes.Empty request, ServerCallContext context)
         {
             List<ProtoMicroservice> microservices = new();
-            foreach (var item in dB.GetMicroservices())
+            foreach (var item in DB.GetMicroservices())
             {
                 ProtoMicroservice microservice = new();
                 ClassConverter.Convert(item, microservice);
@@ -41,28 +42,34 @@ namespace CadFermaHub.Service
         {
             EFMicroservice microservice = new();
             ClassConverter.Convert(request, microservice);
-            return new EditMicroserviceResponse() { Success = dB.EditMicroservice(microservice) };
+            return new EditMicroserviceResponse() { Success = DB.EditMicroservice(microservice) };
         }
 
 
         public async override Task<DeleteMicroserviceResponse> DeleteMicroservice(DeleteMicroserviceRequest request, ServerCallContext context)
         {
-            return new DeleteMicroserviceResponse() { Success = dB.DeleteMicroservice(Guid.Parse(request.Id)) };
+            return new DeleteMicroserviceResponse() { Success = DB.DeleteMicroservice(Guid.Parse(request.Id)) };
         }
 
 
         public async override Task<Response> SendRequest(Request request, ServerCallContext context)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:7229");
+            var microserviceGuid = Guid.Parse(request.MicroserviceGuid);
+            Response response = null;
 
-            // создаем клиент
-            var client = new MicroserviceApi.MicroserviceApiClient(channel);
-            Response response = new();
-            // отправляем каждое слово сервису для получения перевода
+            foreach (var endpoint in endpointsService.EndpointsDict[microserviceGuid])
+            {
+                using var channel = GrpcChannel.ForAddress(endpoint);
 
-            response = await client.SendRequestAsync(request);
+                var client = new MicroserviceApi.MicroserviceApiClient(channel);
+                
+                response = await client.SendRequestAsync(request);
 
-            return response;
+                if (response != null)
+                    break;
+            }
+
+            return response ?? new Response() {ResultData= new MicroserviceServer.Data() { Info = {"Ошибка в подключении" } } };
         }
     }
 }

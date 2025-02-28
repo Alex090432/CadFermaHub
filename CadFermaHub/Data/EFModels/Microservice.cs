@@ -10,6 +10,7 @@ namespace CadFermaHub.Data.EFModels
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public List<HttpMethod> HttpMethods { get; set; } = new();
+        public List<string> Endpoints { get; set; } = new();
         public DataType InputType { get; set; } 
         public DataType TypeResult { get; set; } 
         public string Author { get; set; } = string.Empty;
@@ -17,8 +18,6 @@ namespace CadFermaHub.Data.EFModels
         public string Description { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
     }
-
-    // Enum for HTTP methods
     public enum HttpMethod
     {
         HTTP_METHOD_UNSPECIFIED = 0,
