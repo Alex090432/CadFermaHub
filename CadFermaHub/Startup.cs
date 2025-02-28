@@ -6,6 +6,8 @@ using JavaScriptEngineSwitcher.ChakraCore;
 using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using CadFermaHub.Data.DAL;
 using CadFermaHub.Service;
+using CadFermaHub.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CadFermaHub
 {

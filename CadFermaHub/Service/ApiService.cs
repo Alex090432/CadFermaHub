@@ -59,14 +59,23 @@ namespace CadFermaHub.Service
 
             foreach (var endpoint in endpointsService.EndpointsDict[microserviceGuid])
             {
-                using var channel = GrpcChannel.ForAddress(endpoint);
+                try
+                {
+                    using var channel = GrpcChannel.ForAddress(endpoint);
+                    var client = new MicroserviceApi.MicroserviceApiClient(channel);
+                    response = await client.SendRequestAsync(request);
 
-                var client = new MicroserviceApi.MicroserviceApiClient(channel);
-                
-                response = await client.SendRequestAsync(request);
-
-                if (response != null)
-                    break;
+                    if (response != null)
+                        break;
+                }
+                catch (RpcException rpcEx)
+                {
+                    Console.WriteLine($"Ошибка подключения к эндпоинту {endpoint}: {rpcEx.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Неизвестная ошибка при подключении к эндпоинту {endpoint}: {ex.Message}");
+                }
             }
 
             return response ?? new Response() {ResultData= new MicroserviceServer.Data() { Info = {"Ошибка в подключении" } } };
