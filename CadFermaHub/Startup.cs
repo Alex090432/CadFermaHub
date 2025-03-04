@@ -21,8 +21,9 @@ namespace CadFermaHub
             services.AddTransient<IClassConverter, ClassConverter>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IDB, DB>();
+            
             services.AddSingleton<EndpointsService>();
+            services.AddScoped<IDB, DB>();
             services.AddReact();
             services.AddJsEngineSwitcher(options => options.DefaultEngineName = ChakraCoreJsEngine.EngineName).AddChakraCore();
         }

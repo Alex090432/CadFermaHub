@@ -2,7 +2,7 @@
 
 namespace CadFermaHub.Service
 {
-    interface IClassConverter
+    public interface IClassConverter
     {
         void Convert(object from, object to);
     }

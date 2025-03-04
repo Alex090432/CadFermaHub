@@ -12,9 +12,17 @@ namespace CadFermaHub.Service
 {
     public class ApiServiceWork : ApiService.ApiServiceBase
     {
-        [Inject] private IDB DB { get; set; }
-        [Inject] private IClassConverter ClassConverter { get; set; }
-        [Inject] private EndpointsService endpointsService { get; set; }
+        private IDB DB { get; set; }
+        private IClassConverter ClassConverter { get; set; }
+        private EndpointsService EndpointsService { get; set; }
+
+        public ApiServiceWork(IDB dB, IClassConverter classConverter, EndpointsService endpointsService)
+        {
+            DB = dB;
+            ClassConverter = classConverter;
+            EndpointsService = endpointsService;
+        }
+
         public async override Task<SetMicroserviceResponse> SetMicroservice(ProtoMicroservice request, ServerCallContext context)
         {
             EFMicroservice microservice = new();
@@ -57,7 +65,7 @@ namespace CadFermaHub.Service
             var microserviceGuid = Guid.Parse(request.MicroserviceGuid);
             Response response = null;
 
-            foreach (var endpoint in endpointsService.EndpointsDict[microserviceGuid])
+            foreach (var endpoint in EndpointsService.EndpointsDict[microserviceGuid])
             {
                 try
                 {
