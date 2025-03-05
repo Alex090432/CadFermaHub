@@ -7,58 +7,48 @@ using EFMicroservice = CadFermaHub.Data.EFModels.Microservice;
 using Grpc.Net.Client;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
+using Google.Protobuf.WellKnownTypes;
+using Google.Protobuf;
 
 namespace CadFermaHub.Service
 {
     public class ApiServiceWork : ApiService.ApiServiceBase
     {
         private IDB DB { get; set; }
-        private IClassConverter ClassConverter { get; set; }
         private EndpointsService EndpointsService { get; set; }
 
-        public ApiServiceWork(IDB dB, IClassConverter classConverter, EndpointsService endpointsService)
+        public ApiServiceWork(IDB dB, EndpointsService endpointsService)
         {
             DB = dB;
-            ClassConverter = classConverter;
             EndpointsService = endpointsService;
         }
 
         public async override Task<SetMicroserviceResponse> SetMicroservice(ProtoMicroservice request, ServerCallContext context)
         {
-            EFMicroservice microservice = new();
-            ClassConverter.Convert(request, microservice);
+            var microservice = ToEFMicroservice(request);
             return new SetMicroserviceResponse() { Success = DB.AddMicroservice(microservice) };
         }
 
-
-        public async override Task<GetMicroserviceResponse> GetMicroservices(Google.Protobuf.WellKnownTypes.Empty request, ServerCallContext context)
+        public async override Task<GetMicroserviceResponse> GetMicroservices(Empty request, ServerCallContext context)
         {
-            List<ProtoMicroservice> microservices = new();
-            foreach (var item in DB.GetMicroservices())
-            {
-                ProtoMicroservice microservice = new();
-                ClassConverter.Convert(item, microservice);
-                microservices.Add(microservice);
-            }
-            var result =new GetMicroserviceResponse();
+            var result = new GetMicroserviceResponse();
+            var microservices = DB.GetMicroservices()
+                .Select(m => ToProtoMicroservice(m))
+                .Where(m => m != null);
             result.Microservices.AddRange(microservices);
             return result;
         }
 
-
         public async override Task<EditMicroserviceResponse> EditMicroservice(ProtoMicroservice request, ServerCallContext context)
         {
-            EFMicroservice microservice = new();
-            ClassConverter.Convert(request, microservice);
+            var microservice = ToEFMicroservice(request);
             return new EditMicroserviceResponse() { Success = DB.EditMicroservice(microservice) };
         }
-
 
         public async override Task<DeleteMicroserviceResponse> DeleteMicroservice(DeleteMicroserviceRequest request, ServerCallContext context)
         {
             return new DeleteMicroserviceResponse() { Success = DB.DeleteMicroservice(Guid.Parse(request.Id)) };
         }
-
 
         public async override Task<Response> SendRequest(Request request, ServerCallContext context)
         {
@@ -78,15 +68,56 @@ namespace CadFermaHub.Service
                 }
                 catch (RpcException rpcEx)
                 {
-                    Console.WriteLine($"Ошибка подключения к эндпоинту {endpoint}: {rpcEx.Message}");
+                    Console.WriteLine($"РџСЂРѕР±Р»РµРјР° СЃ РїРѕРґРєР»СЋС‡РµРЅРёРµРј {endpoint}: {rpcEx.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Неизвестная ошибка при подключении к эндпоинту {endpoint}: {ex.Message}");
+                    Console.WriteLine($"РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° {endpoint}: {ex.Message}");
                 }
             }
 
-            return response ?? new Response() {ResultData= new MicroserviceServer.Data() { Info = {"Ошибка в подключении" } } };
+            return response ?? new Response() {ResultData= new MicroserviceServer.Data() { Info = {"пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ" } } };
+        }
+
+        public EFMicroservice ToEFMicroservice(ProtoMicroservice proto)
+        {
+            if (proto == null) return null;
+
+            return new EFMicroservice
+            {
+                Id = string.IsNullOrEmpty(proto.Id) ? Guid.NewGuid() : Guid.Parse(proto.Id),
+                Name = proto.Name,
+                HttpMethods = proto.HttpMethods.Select(x=> (Data.EFModels.HttpMethod)x).ToList(),
+                Endpoints = proto.Endpoints.ToList(),
+                InputType = (Data.EFModels.DataType)proto.InputType,
+                TypeResult = (Data.EFModels.DataType)proto.TypeResult,
+                Author = proto.Author,
+                Params = proto.Params,
+                Description = proto.Description,
+                Notes = proto.Notes
+            };
+        }
+
+        public ProtoMicroservice ToProtoMicroservice(EFMicroservice ef)
+        {
+            if (ef == null) return null;
+
+            var proto = new ProtoMicroservice
+            {
+                Id = ef.Id.ToString(),
+                Name = ef.Name,
+                Author = ef.Author,
+                Params = ef.Params,
+                Description = ef.Description,
+                Notes = ef.Notes,
+                InputType = (MicroserviceServer.DataType)ef.InputType,
+                TypeResult = (MicroserviceServer.DataType)ef.TypeResult
+            };
+            
+            proto.HttpMethods.AddRange(ef.HttpMethods.Select(x=> (MicroserviceServer.HttpMethod)x).ToList());
+            proto.Endpoints.AddRange(ef.Endpoints);
+            
+            return proto;
         }
     }
 }

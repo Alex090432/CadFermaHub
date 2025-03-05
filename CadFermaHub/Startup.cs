@@ -18,8 +18,6 @@ namespace CadFermaHub
             services.AddMemoryCache();
             services.AddGrpc();
 
-            services.AddTransient<IClassConverter, ClassConverter>();
-
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
             services.AddSingleton<EndpointsService>();

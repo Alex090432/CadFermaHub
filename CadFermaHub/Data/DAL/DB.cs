@@ -41,20 +41,19 @@ namespace CadFermaHub.Data.DAL
 
         public bool EditMicroservice(Microservice microservice)
         {
-            var existingMicroservice = _dbContext.Microservices.FirstOrDefault(x => x.Id == microservice.Id);
-            if (existingMicroservice != null)
+            try
             {
                 _dbContext.Microservices.Update(microservice);
                 _dbContext.SaveChanges();
                 _endpointsService.EndpointsDict.AddOrUpdate(
                 microservice.Id,
                 microservice.Endpoints,
-                (key, oldValue) => microservice.Endpoints
-            );
+                (key, oldValue) => microservice.Endpoints);
                 return true;
             }
-            else
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
